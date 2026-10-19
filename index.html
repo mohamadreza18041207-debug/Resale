@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>همیار رساله دکتری</title>
 <meta name="theme-color" content="#1f5f8b">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="همیار رساله">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <style>
 :root{--bg:#f6f4ef;--card:#fff;--tx:#1d2433;--mu:#6b7385;--ac:#1f5f8b;--ac2:#e8f1f8;--bd:#e2ded4;--ok:#2e8b57;--bad:#c0392b;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14171d;--card:#1d222b;--tx:#e8eaf0;--mu:#97a0b3;--ac:#6db3e0;--ac2:#22303d;--bd:#2c3340;--ok:#4cc38a;--bad:#ef7b6e}}
@@ -133,7 +140,7 @@ function searchView(q){const n=norm(q.replace(/^#/,''));let h='',c=0;
  Object.keys(T).forEach(k=>{S[k].filter(it=>norm(JSON.stringify(it)).includes(n)).forEach(it=>{c++;h+=`<div class="l">${T[k].n}</div>`+card(k,it)})});
  S.chapters.forEach(ch=>{if(norm(ch.text).includes(n)){c++;const i=norm(ch.text).indexOf(n);h+=`<div class="l">پیش‌نویس</div><div class="card"><h3>${esc(ch.n)}</h3><div class="l">…${esc(ch.text.slice(Math.max(0,i-60),i+100))}…</div><button class="btn g" data-a="gotoch" data-id="${ch.id}">باز کردن</button></div>`}});
  return `<div class="l">${fa(c)} نتیجه برای «${esc(q)}»</div>`+h}
-function backup(){return `<div class="card"><b>🔒 حریم خصوصی</b><div class="l">داده‌ها فقط در حافظه‌ی همین مرورگر و همین دستگاه‌اند. فایل برنامه یا لینک آن داده‌ای ندارد؛ اگر برنامه را به کسی بدهید نسخه‌ی خالی را می‌بیند. داده فقط وقتی منتقل می‌شود که خودتان فایل پشتیبان بدهید. کلید Zotero در پشتیبان نمی‌آید.</div></div><div class="card f"><b>💾 پشتیبان خودکار روزانه (۳ فایل آخر)</b><div class="l">مرورگر اجازه نمی‌دهد برنامه بی‌صدا در پوشه‌ی دلخواه (یا پوشه‌ی خودِ برنامه) فایل بنویسد. در رایانه با Chrome/Edge می‌توانید یک پوشه انتخاب کنید؛ بعد هر روز پس از تغییرات، فایل JSON همان روز در آن نوشته می‌شود و فقط ۳ فایل آخر می‌ماند. در اندروید این قابلیت وجود ندارد؛ روزی یک‌بار دکمه‌ی آخر را بزنید و در Files / Drive / Telegram ذخیره کنید.</div><div id="fdl" class="l"></div><div class="row" style="margin-top:8px">${window.showDirectoryPicker?'<button class="btn" data-a="pickdir">انتخاب پوشه</button><button class="btn g" data-a="nodir">غیرفعال</button>':''}<button class="btn g" data-a="sharej">ذخیره / اشتراک پشتیبان امروز</button></div></div>
+function backup(){return `<div class="card"><b>🔒 حریم خصوصی</b><div class="l">داده‌ها فقط در حافظه‌ی همین مرورگر و همین دستگاه‌اند. فایل برنامه یا لینک آن داده‌ای ندارد؛ اگر برنامه را به کسی بدهید نسخه‌ی خالی را می‌بیند. داده فقط وقتی منتقل می‌شود که خودتان فایل پشتیبان بدهید. کلید Zotero در پشتیبان نمی‌آید.</div></div><div class="card f"><b>💾 پشتیبان خودکار روزانه (۳ فایل آخر)</b><div class="l">مرورگر اجازه نمی‌دهد برنامه بی‌صدا در پوشه‌ی دلخواه (یا پوشه‌ی خودِ برنامه) فایل بنویسد. در رایانه با Chrome/Edge می‌توانید یک پوشه انتخاب کنید؛ بعد هر روز پس از تغییرات، فایل JSON همان روز در آن نوشته می‌شود و فقط ۳ فایل آخر می‌ماند. برای هم‌گام‌سازی لپ‌تاپ و موبایل، پوشه را داخل پوشه‌ی Google Drive / Dropbox / OneDrive بسازید تا روی گوشی هم در همان سرویس دیده شود. در اندروید و آیفون انتخاب پوشه وجود ندارد؛ روزی یک‌بار دکمه‌ی آخر را بزنید و در Files / Drive / Telegram ذخیره کنید.</div><div id="fdl" class="l"></div><div class="row" style="margin-top:8px">${window.showDirectoryPicker?'<button class="btn" data-a="pickdir">انتخاب پوشه</button><button class="btn g" data-a="restdir">بازیابی از همین پوشه</button><button class="btn g" data-a="nodir">غیرفعال</button>':''}<button class="btn g" data-a="sharej">ذخیره / اشتراک پشتیبان امروز</button></div></div>
 <div class="card"><b>📴 استفاده آفلاین</b><div class="l">این صفحه هیچ وابستگی بیرونی ندارد. فایل HTML برنامه را روی دستگاه ذخیره کنید و مستقیم در مرورگر باز کنید؛ بدون اینترنت کار می‌کند. داده‌های نسخه آنلاین و نسخه فایل جدا هستند؛ با «خروجی JSON» و «بازیابی» منتقل کنید.</div></div><div class="card f"><b>پشتیبان‌گیری و بازیابی</b><div class="l">همه داده‌ها فقط در همین مرورگر ذخیره می‌شوند. مرتب پشتیبان بگیرید.</div><label>رمز (اختیاری، برای رمزگذاری خروجی)</label><input type="password" id="pw" autocomplete="off"><div class="row" style="margin-top:10px"><button class="btn" data-a="expj">خروجی JSON</button><button class="btn g" data-a="expmd">خروجی Markdown</button></div>${out&&tab==='backup'?`<label>متن خروجی (کپی کنید یا فایل ذخیره می‌شود)</label><textarea id="o" readonly style="min-height:140px">${esc(out)}</textarea><button class="btn g" data-a="copy" style="margin-top:6px">کپی</button>`:''}</div>
  <div class="card f"><b>بازیابی</b><label>انتخاب فایل پشتیبان</label><input type="file" id="imf"><label>یا متن پشتیبان را بچسبانید</label><textarea id="imt"></textarea><button class="btn" data-a="imp" style="margin-top:8px">بازیابی</button></div>
  <div class="card"><b>نسخه‌های خودکار (۵ نسخه‌ی اخیر + یک نسخه در هر روز)</b><div id="snl"></div></div>
@@ -203,7 +210,8 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-a]')
  else if(a==='uncode'){const q=S.quotes.find(x=>x.id===d.q);q.codes=(q.codes||[]).filter(x=>x!==d.c);save()}
  else if(a==='book'){out=codebook()}
  else if(a==='pickdir'){try{const h=await showDirectoryPicker({mode:'readwrite'});await idbOp('put',h,'dirh');await folderWrite(true);toast('پوشه انتخاب شد')}catch(e){if(e.name!=='AbortError')toast('انتخاب پوشه ممکن نشد')}}
- else if(a==='nodir'){await idbDel('dirh');localStorage.removeItem(K+'_fw');toast('غیرفعال شد')}
+ else if(a==='restdir'){try{const h=await idbGet('dirh');if(!h){toast('اول پوشه را انتخاب کنید');return}if(await h.queryPermission({mode:'read'})!=='granted'&&await h.requestPermission({mode:'read'})!=='granted')return;const [fh]=await showOpenFilePicker({startIn:h,multiple:false,types:[{description:'پشتیبان',accept:{'application/json':['.json']}}]});await importTxt(await (await fh.getFile()).text())}catch(e){if(e.name!=='AbortError')toast('بازیابی ممکن نشد')}return}
+  else if(a==='nodir'){await idbDel('dirh');localStorage.removeItem(K+'_fw');toast('غیرفعال شد')}
  else if(a==='sharej'){const t=JSON.stringify({...S,zot:{t:S.zot.t}}),f=new File([t],'thesis-backup-'+today()+'.json',{type:'application/json'});try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f]})}else dl(f.name,t);localStorage.setItem(K+'_xp',Date.now());toast('انجام شد')}catch(e){if(e.name!=='AbortError')toast('انجام نشد؛ از «خروجی JSON» استفاده کنید')}}
  else if(a==='snapnow'){await snap(true);toast('نسخه ذخیره شد')}
  else if(a==='snaprest'){if(!confirm('داده‌های فعلی با این نسخه جایگزین شود؟ (از وضعیت فعلی هم قبلش نسخه گرفته می‌شود)'))return;await snap(true);try{const x=JSON.parse(await idbGet(d.k));x.zot=S.zot;x.pos=x.pos||{};S=x;save();toast('بازگردانی شد')}catch(e){toast('بازگردانی ناموفق بود')}}
@@ -464,6 +472,8 @@ function coding(){const nav=[['1','۱ کد اولیه'],['2','۲ کد ثانوی
  return h}
 $('#q').addEventListener('input',render);
 render();
+
+try{if('serviceWorker' in navigator&&/^https?:/.test(location.protocol))navigator.serviceWorker.register('sw.js')}catch(e){}
 </script>
 </body>
 </html>
