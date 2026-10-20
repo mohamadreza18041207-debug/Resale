@@ -73,7 +73,7 @@ S=Object.assign({sources:[],notes:[],gaps:[],decisions:[],meetings:[],tasks:[],c
 if(!S.chapters.length)S.chapters=['مقدمه','مرور ادبیات','روش‌شناسی','یافته‌ها','نتیجه‌گیری'].map(n=>({id:uid(),n,text:'',v:[]}));
 const MS=['پروپوزال','مرور ادبیات','چارچوب نظری و روش‌شناسی','جمع‌آوری داده','تحلیل','نگارش','دفاع'];
 S.zot=S.zot||{t:'users'};S.pos=S.pos||{};S.chapters.forEach(c=>{if(!c.lv)c.lv=1});S.meta=S.meta||{};S.cfg=Object.assign({style:'apa',refMode:'end',toc:true,cover:true,num:true,allRefs:false},S.cfg||{});
-const SS=['شروع‌نشده','در حال مطالعه','خوانده‌شده'];const st=s=>s.status||SS[0];let sf='';
+const SS=['شروع‌نشده','در حال مطالعه','خوانده‌شده'];const st=s=>s.status||SS[0];let sf='';let lim=30;
 const defSt=()=>MS.map(n=>({id:uid(),n,p:0,d:''}));
 if(!S.stages)S.stages=MS.map((n,i)=>({id:uid(),n,p:(S.ms[i]||{}).p||0,d:(S.ms[i]||{}).d||''}));
 function save(){try{localStorage.setItem(K,JSON.stringify(S));snapSoon()}catch(e){toast('ذخیره ناموفق بود؛ شاید حافظه مرورگر پر است')}}
@@ -111,7 +111,7 @@ function card(k,it){if(k==='quotes')return quoteCard(it);const F=T[k].f;let h=`<
  if(k==='sources')h+=`<div class="l">${esc(cite(it))}</div>`;if(k==='sources'){const qn=S.quotes.filter(q=>q.src===it.id);if(qn.length)h+=`<div class="l">🏷 ${fa(qn.length)} بخش داده · ${fa(qn.filter(q=>(q.codes||[]).length).length)} کدگذاری‌شده</div>`}
  F.slice(k==='sources'||k==='notes'||k==='gaps'?1:1).forEach(f=>{if(!(k==='sources'&&['author','year','pub'].includes(f[0]))&&!(k==='notes'&&f[0]==='text')&&!(k==='gaps'&&f[0]==='text'))h+=disp(k,f,it)});
  if(k==='meetings'&&it.date)h=h.replace('<h3>','<h3>جلسه '+fd(it.date)+' — ');
- [['file',it.id,'فایل ۱'],['file2',it.id+'_2','فایل ۲']].forEach(([fk,pk,lb])=>{const f=it[fk];if(f)h+=`<div class="row"><button class="btn" data-a="open" data-id="${it.id}" data-s="${fk}">📖 ${lb}: ${esc(f.name.slice(0,28))}${S.pos[pk]?' · '+fa(Math.round((S.pos[pk].pr||0)*100))+'٪':''}</button></div>`});if(it.file)h+=`<details><summary>📎 ${esc(it.file.name)}</summary>${it.file.text?'<pre>'+esc(it.file.text.slice(0,20000))+'</pre>':'<div class="l">فقط مرجع فایل ذخیره شده (متن فقط برای txt و md ذخیره می‌شود)</div>'}</details>`;
+ [['file',it.id,'فایل ۱'],['file2',it.id+'_2','فایل ۲']].forEach(([fk,pk,lb])=>{const f=it[fk];if(f)h+=`<div class="row"><button class="btn" data-a="open" data-id="${it.id}" data-s="${fk}">📖 ${lb}: ${esc(f.name.slice(0,28))}${S.pos[pk]?' · '+fa(Math.round((S.pos[pk].pr||0)*100))+'٪':''}</button></div>`});if(it.file)h+=`<details><summary>📎 ${esc(it.file.name)}</summary>${it.file.text?'<pre>'+esc(it.file.text.slice(0,3000))+'</pre>':'<div class="l">فقط مرجع فایل ذخیره شده (متن فقط برای txt و md ذخیره می‌شود)</div>'}</details>`;
  if(k==='quotes')h+=`<div class="l">${esc(inText(it))}</div><div class="row"><button class="btn g" data-a="cpq" data-id="${it.id}">کپی نقل‌قول + ارجاع</button><button class="btn g" data-a="qdraft" data-id="${it.id}">افزودن به پیش‌نویس</button></div>`;
  const rel=tagsOf(it).length?Object.keys(T).reduce((n,x)=>n+S[x].filter(o=>o!==it&&tagsOf(o).some(t=>tagsOf(it).includes(t))).length,0):0;
  if(rel)h+=`<div class="l">🔗 ${fa(rel)} مورد مرتبط با برچسب‌های مشترک</div>`;
@@ -120,7 +120,7 @@ function listView(k,q,tag){const cur=ed&&ed.k===k?S[k].find(x=>x.id===ed.id):nul
  let h=`<form class="card f" data-k="${k}"><b>${cur?'ویرایش':'افزودن'}</b>${T[k].f.map(f=>field(f,cur?cur[f[0]]:'')).join('')}${k==='sources'?'<label>فایل اول، مثلاً متن اصلی (txt/md/pdf/docx)</label><input type="file" name="file"><label>فایل دوم (مثلاً ترجمه)</label><input type="file" name="file2">':''}<div class="row" style="margin-top:10px"><button class="btn">ذخیره</button>${cur?'<button type="button" class="btn g" data-a="cancel">انصراف</button>':''}</div></form>`;
  if(k==='sources')h+=chips()+zotCard();if(k==='sources'&&S.sources.length)h+=`<button class="btn g" data-a="bib" style="margin-bottom:10px">📋 تولید فهرست منابع</button>${out&&tab==='sources'?`<textarea id="o" readonly>${esc(out)}</textarea>`:''}`;
  const items=S[k].filter(it=>(!tag||tagsOf(it).includes(tag))&&(k!=='sources'||!sf||st(it)===sf)).sort((a,b)=>b.created-a.created);
- return h+(items.map(i=>card(k,i)).join('')||'<div class="l">هنوز موردی ثبت نشده.</div>')}
+ return h+(items.slice(0,lim).map(i=>card(k,i)).join('')||'<div class="l">هنوز موردی ثبت نشده.</div>')+(items.length>lim?`<button class="btn g" data-a="more" style="width:100%;margin:10px 0">نمایش بیشتر (${fa(items.length-lim)} مورد دیگر)</button>`:'')}
 function dash(){const tw=S.chapters.reduce((n,c)=>n+wc(c.text),0);const pr=S.stages.length?Math.round(S.stages.reduce((n,s)=>n+s.p,0)/S.stages.length):0;
  const ks=Object.keys(S.log).sort(),df={};let pv=0;ks.forEach(k=>{df[k]=Math.max(0,S.log[k]-pv);pv=S.log[k]});
  const days=[...Array(7)].map((_,i)=>{const d=new Date(Date.now()-(6-i)*864e5);const k=d.toISOString().slice(0,10);return[d.toLocaleDateString('fa-IR-u-ca-persian',{weekday:'short'}),df[k]||0]});const mx=Math.max(1,...days.map(d=>d[1]));
@@ -163,9 +163,10 @@ function dl(name,text){try{const a=document.createElement('a');a.href=URL.create
 async function importTxt(t){t=t.trim();try{if(t.startsWith('ENC:'))t=await dec(t,$('#pw').value);const d=JSON.parse(t);if(!d.sources)throw 0;const z=S.zot;S=Object.assign(S,d);S.zot=z;save();toast('بازیابی شد');render()}catch(e){toast('فایل نامعتبر است یا رمز اشتباه است')}}
 const cur=()=>S.chapters.find(c=>c.id===S.cur)||S.chapters[0];
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-a]');if(!b)return;const a=b.dataset.a,d=b.dataset;
- if(a==='tab'){tab=d.v;ed=null;out='';$('#q').value=''}
+ if(a==='tab'){tab=d.v;ed=null;out='';lim=30;$('#q').value=''}
+  else if(a==='more'){lim+=30}
  else if(a==='tag'){$('#q').value='#'+d.v}
- else if(a==='sf'){sf=d.v}
+ else if(a==='sf'){sf=d.v;lim=30}
  else if(a==='mv'){S.sources.find(x=>x.id===d.id).status=d.v;save()}
  else if(a==='addst'){const n=prompt('نام مرحله:');if(!n)return;S.stages.push({id:uid(),n,p:0,d:''});save()}
  else if(a==='stren'){const g=S.stages[d.i],n=prompt('نام مرحله:',g.n);if(!n)return;g.n=n;save()}
