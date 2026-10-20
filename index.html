@@ -91,7 +91,7 @@ let tab='dash',ed=null,out='';
 const chN=id=>(S.chapters.find(c=>c.id===id)||{}).n||'';
 const srcT=id=>(S.sources.find(s=>s.id===id)||{}).title||'';
 const cite=s=>[s.author,s.year&&'('+s.year+')'].filter(Boolean).join(' ')+'. '+[s.title,s.pub].filter(Boolean).join('. ')+'.';
-const tagsOf=it=>(it.tags||'').split(/[,،]/).map(x=>x.trim()).filter(Boolean);
+const tagsOf=it=>String(Array.isArray(it.tags)?it.tags.join('،'):(it.tags||'')).split(/[,،]/).map(x=>x.trim()).filter(Boolean);
 function field(f,v){const[k,l,t]=f;let i;
  if(t==='a')i=`<textarea name="${k}">${esc(v)}</textarea>`;
  else if(t==='img')i=`<input type="file" name="imgs" accept="image/*" multiple><div class="l">می‌توانید عکس را در کادر یادداشت Paste هم کنید.</div>${(v||[]).map(m=>`<label style="display:inline-block;margin-left:8px"><img data-im="${m}" style="height:60px;border-radius:6px;display:block"><input type="checkbox" name="rm" value="${m}" style="width:auto"> حذف</label>`).join('')}`;
@@ -120,7 +120,7 @@ function listView(k,q,tag){const cur=ed&&ed.k===k?S[k].find(x=>x.id===ed.id):nul
  let h=`<form class="card f" data-k="${k}"><b>${cur?'ویرایش':'افزودن'}</b>${T[k].f.map(f=>field(f,cur?cur[f[0]]:'')).join('')}${k==='sources'?'<label>فایل اول، مثلاً متن اصلی (txt/md/pdf/docx)</label><input type="file" name="file"><label>فایل دوم (مثلاً ترجمه)</label><input type="file" name="file2">':''}<div class="row" style="margin-top:10px"><button class="btn">ذخیره</button>${cur?'<button type="button" class="btn g" data-a="cancel">انصراف</button>':''}</div></form>`;
  if(k==='sources')h+=chips()+zotCard();if(k==='sources'&&S.sources.length)h+=`<button class="btn g" data-a="bib" style="margin-bottom:10px">📋 تولید فهرست منابع</button>${out&&tab==='sources'?`<textarea id="o" readonly>${esc(out)}</textarea>`:''}`;
  const items=S[k].filter(it=>(!tag||tagsOf(it).includes(tag))&&(k!=='sources'||!sf||st(it)===sf)).sort((a,b)=>b.created-a.created);
- return h+(items.slice(0,lim).map(i=>card(k,i)).join('')||'<div class="l">هنوز موردی ثبت نشده.</div>')+(items.length>lim?`<button class="btn g" data-a="more" style="width:100%;margin:10px 0">نمایش بیشتر (${fa(items.length-lim)} مورد دیگر)</button>`:'')}
+ return h+(items.slice(0,lim).map(i=>{try{return card(k,i)}catch(e){return `<div class="card"><b>${esc(i.title||i.text||'؟')}</b><div class="l">⚠️ این مورد نمایش داده نشد: ${esc(e.message)}</div><div class="row" style="margin-top:6px"><button class="btn d" data-a="del" data-k="${k}" data-id="${i.id}">حذف</button></div></div>`}}).join('')||'<div class="l">هنوز موردی ثبت نشده.</div>')+(items.length>lim?`<button class="btn g" data-a="more" style="width:100%;margin:10px 0">نمایش بیشتر (${fa(items.length-lim)} مورد دیگر)</button>`:'')}
 function dash(){const tw=S.chapters.reduce((n,c)=>n+wc(c.text),0);const pr=S.stages.length?Math.round(S.stages.reduce((n,s)=>n+s.p,0)/S.stages.length):0;
  const ks=Object.keys(S.log).sort(),df={};let pv=0;ks.forEach(k=>{df[k]=Math.max(0,S.log[k]-pv);pv=S.log[k]});
  const days=[...Array(7)].map((_,i)=>{const d=new Date(Date.now()-(6-i)*864e5);const k=d.toISOString().slice(0,10);return[d.toLocaleDateString('fa-IR-u-ca-persian',{weekday:'short'}),df[k]||0]});const mx=Math.max(1,...days.map(d=>d[1]));
@@ -147,7 +147,7 @@ function backup(){return `<div class="card"><b>🔒 حریم خصوصی</b><div 
  <button class="btn d" data-a="reset">پاک‌کردن همه داده‌ها</button>`}
 function render(){const q=$('#q').value.trim();
  $('#nav').innerHTML=TABS.map(([k,n])=>`<button data-a="tab" data-v="${k}" class="${tab===k&&!q?'on':''}">${n}</button>`).join('');
- let h;if(q)h=searchView(q);else if(tab==='dash')h=dash();else if(tab==='draft')h=draft();else if(tab==='matrix')h=matrix();else if(tab==='coding')h=coding();else if(tab==='build')h=build();else if(tab==='plan')h=plan();else if(tab==='backup')h=backup();else h=listView(tab);
+ let h;try{if(q)h=searchView(q);else if(tab==='dash')h=dash();else if(tab==='draft')h=draft();else if(tab==='matrix')h=matrix();else if(tab==='coding')h=coding();else if(tab==='build')h=build();else if(tab==='plan')h=plan();else if(tab==='backup')h=backup();else h=listView(tab)}catch(e){h=`<div class="card" style="border-color:#b33"><b>⚠️ خطا در نمایش این بخش</b><div class="l" dir="ltr">${esc(e&&e.message||e)}</div><div class="l">از تب «پشتیبان» بکاپ بگیرید و این متن را برای پشتیبانی بفرستید.</div></div>`}
  $('#main').innerHTML=h;hydrate();if(tab==='backup'&&!q)loadSnaps();if(q){$('#main').insertAdjacentHTML('beforeend','<div id="fts" class="l">در حال جستجو در متن فایل‌ها…</div>');clearTimeout(window.fst);window.fst=setTimeout(()=>fileSearch(q),300)}}
 function toMD(){let m='# رساله\n\n## منابع\n'+S.sources.map(s=>'- '+cite(s)).join('\n');
  m+='\n\n## یادداشت‌ها\n'+S.notes.map(n=>'- '+n.text+(n.src?' ('+srcT(n.src)+')':'')).join('\n');
